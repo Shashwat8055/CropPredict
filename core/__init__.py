@@ -1,0 +1,3 @@
+"""
+CropPricePredict - Core Package
+"""

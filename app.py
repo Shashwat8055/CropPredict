@@ -17,7 +17,10 @@ BASE_DIR = Path(__file__).resolve().parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
-from ui.styles import get_custom_css, render_role_badge
+try:
+    from styles import get_custom_css, render_role_badge
+except Exception:
+    from ui.styles import get_custom_css, render_role_badge
 from data.marketplace_db import init_marketplace_tables, is_superadmin_email
 from views.auth import render_login_page
 from views.seller_portal import render_seller_portal
@@ -31,6 +34,7 @@ from views.selling_advisor import render_selling_advisor_page
 from views.data_management import render_data_management_page
 from views.model_management import render_model_management_page
 from views.reports import render_reports_page
+from views.ml_studio import render_ml_studio_page
 
 # Page Configuration
 st.set_page_config(
@@ -77,8 +81,9 @@ if st.session_state["user"] is None:
 
 # ==========================================
 # AUTHENTICATED USER SESSION
-# ==========================================
-current_user = st.session_state["user"]
+current_user = st.session_state.get("user")
+if not current_user:
+    st.stop()
 user_role = current_user.get("role", "seller")
 user_email = current_user.get("email", "")
 
@@ -115,15 +120,17 @@ with st.sidebar:
     if user_role == "seller":
         nav_options = [
             "🌾 Seller Dashboard & Produce",
+            "🔬 ML Research & Model Studio",
+            "📋 Crop Planning & Profit Estimation",
             "📈 Mandi Price Forecasting",
             "💡 Storage & Sale Advisor",
-            "📋 Crop Planning & Profit Estimation",
             "📑 Mandi Market Comparison",
             "📄 Market Reports"
         ]
     elif user_role == "buyer":
         nav_options = [
             "🛒 Buyer Dashboard & Marketplace",
+            "🔬 ML Research & Model Studio",
             "🔍 Mandi Price Comparison",
             "📈 Historical Price Trends",
             "📄 Market Reports"
@@ -131,16 +138,16 @@ with st.sidebar:
     elif user_role == "superadmin":
         nav_options = [
             "🛡️ Super Admin Command Center",
+            "🔬 ML Research & Model Studio",
             "🔄 Buyer-Seller Interactions",
             "👥 Users Directory",
             "🌾 All Produce Listings",
             "📦 All Trade Orders",
             "🏛️ APMC Mandi Benchmark Records",
-            "⚙️ Statistical Forecasting Models",
             "📊 Platform Overview Dashboard"
         ]
     else:
-        nav_options = ["🌾 Dashboard"]
+        nav_options = ["🌾 Dashboard", "🔬 ML Research & Model Studio"]
 
     selected_nav = st.radio(
         "Navigation",
@@ -161,7 +168,10 @@ with st.sidebar:
 # ==========================================
 # PAGE ROUTING BY ROLE AND NAVIGATION
 # ==========================================
-if user_role == "seller":
+if selected_nav == "🔬 ML Research & Model Studio":
+    render_ml_studio_page()
+
+elif user_role == "seller":
     if selected_nav == "🌾 Seller Dashboard & Produce":
         render_seller_portal(current_user)
     elif selected_nav == "📈 Mandi Price Forecasting":
@@ -198,7 +208,5 @@ elif user_role == "superadmin":
         render_superadmin_portal(current_user)
     elif selected_nav == "🏛️ APMC Mandi Benchmark Records":
         render_data_management_page()
-    elif selected_nav == "⚙️ Statistical Forecasting Models":
-        render_model_management_page()
     elif selected_nav == "📊 Platform Overview Dashboard":
         render_dashboard_page()

@@ -1,0 +1,20 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Environment secrets
+.env
+.env.*
+
+# Generated reports
+generated_reports/*.pdf
+
+# Temporary files
+*.log
+.DS_Store

@@ -1,168 +1,175 @@
-# KrishiMandi – Agricultural Trade & Mandi Price Intelligence System
+# KrishiMandi – Dual-Engine Machine Learning Agricultural Intelligence & Trading System
 
-**B.Tech Final Year Capstone Project (Computer Science & Information Technology)**
-
----
-
-## 🌾 Project Overview
-
-**KrishiMandi (CropPricePredict)** is a full-stack agricultural commodity trading and price intelligence web application. It connects farmers directly with grain traders, eliminates unnecessary middlemen, provides statistical price forecasting for APMC mandis, and enforces secure, role-based data isolation with complete oversight for regulatory super administrators.
-
-### Core Problems Solved:
-1. **Information Asymmetry**: Farmers often do not know whether mandi prices will rise or fall next month, leading to distress sales right after harvest.
-2. **Lack of Direct Market Access**: Produce is often routed through informal intermediaries. KrishiMandi gives farmers a dedicated listing platform to sell directly to verified wholesale buyers.
-3. **Data Security & Privacy**: Buyers cannot alter or tamper with sellers' listings; sellers cannot alter buyers' purchase bids or access other farmers' private listings.
-4. **Regulatory Transparency**: Regulatory bodies (Super Administrators with `@super.com` emails) can audit all transactions and observe live negotiations and deal interactions between buyers and sellers in real time.
+**B.Tech Final Year Capstone Project**  
+**Department of Computer Science & Engineering**
 
 ---
 
-## 👥 Multi-Role Architecture
+## 🌾 Project Abstract & Problem Formulation
 
-The system features three distinct, isolated user portals:
+Agricultural markets in India suffer from dual systemic inefficiencies:
+1. **Agronomic Misallocation**: Smallholder farmers often cultivate crops without empirical compatibility analysis of their soil chemistry ($N, P, K, \text{pH}$) and localized agro-climatic conditions (Temperature, Humidity, Rainfall).
+2. **Post-Harvest Price Volatility**: Lack of transparent future mandi price estimations forces farmers into distress selling during seasonal harvest gluts.
+
+**KrishiMandi** solves both challenges using a **Dual-Engine Machine Learning Pipeline** integrated with a secure, role-isolated commodity trading portal:
+- **Engine 1 (Supervised Multiclass Classification)**: Recommends optimal crops based on soil nutrient profiles and meteorological parameters, returning posterior class probabilities $P(\text{Crop}_i \mid \mathbf{x})$.
+- **Engine 2 (Supervised Time-Series Regression)**: Predicts expected APMC mandi prices using autoregressive price lags, rolling moving averages, and cyclical seasonal encodings over 1 to 90-day forecast horizons.
+- **ML Research & Model Studio**: An interactive experimentation environment providing Exploratory Data Analysis (EDA), confusion matrices, feature importances, actual vs. predicted diagnostics, and live hyperparameter retraining.
+
+---
+
+## 🔬 Machine Learning Pipeline Architecture
 
 ```
-                                 ┌──────────────────────────────┐
-                                 │      KrishiMandi Portal      │
-                                 │       (Authentication)       │
-                                 └──────────────┬───────────────┘
-                                                │
-                 ┌──────────────────────────────┼──────────────────────────────┐
-                 ▼                              ▼                              ▼
-    ┌─────────────────────────┐    ┌─────────────────────────┐    ┌─────────────────────────┐
-    │     FARMER / SELLER     │    │      TRADER / BUYER     │    │    SUPER ADMINISTRATOR  │
-    │  (ramesh.farmer@...)    │    │   (suresh.trader@...)   │    │     (admin@super.com)   │
-    ├─────────────────────────┤    ├─────────────────────────┤    ├─────────────────────────┤
-    │ • Produce Inventory     │    │ • Farm Marketplace     │    │ • Platform Overview     │
-    │ • Incoming Buyer Orders │    │ • My Purchases & Orders │    │ • Buyer-Seller Tracker  │
-    │ • Accept / Ship Deals   │    │ • Place Bids & Orders   │    │ • All Users Directory   │
-    │ • Mandi Price Forecast  │    │ • Mandi Rate Comparison │    │ • All Listings & Orders │
-    │ • Storage vs Sell Advice│    │ • Cancel Pending Orders │    │ • APMC Historical Data  │
-    └─────────────────────────┘    └─────────────────────────┘    └─────────────────────────┘
+                                 ┌────────────────────────────────────────────────────────┐
+                                 │       KRISHIMANDI DUAL-ENGINE ML ARCHITECTURE          │
+                                 └───────────────────────────┬────────────────────────────┘
+                                                             │
+                             ┌───────────────────────────────┴───────────────────────────────┐
+                             ▼                                                               ▼
+        ┌─────────────────────────────────────────┐                     ┌─────────────────────────────────────────┐
+        │        ENGINE 1: CROP SUITABILITY       │                     │       ENGINE 2: PRICE FORECASTING       │
+        │      (Multiclass ML Classification)     │                     │       (Time-Series ML Regression)       │
+        ├─────────────────────────────────────────┤                     ├─────────────────────────────────────────┤
+        │ • Feature Vector x ∈ R⁷:                │                     │ • Feature Vector z ∈ R²⁶:               │
+        │   [N, P, K, Temp, Humidity, pH, Rain]   │                     │   - Price Lags: t-1, t-2, t-3, t-7...   │
+        │ • Target: 10 Cultivar Classes           │                     │   - Moving Averages: MA_7, MA_14, MA_30 │
+        │ • Algorithms Benchmarked:               │                     │   - Volatility & Momentum: Std_7, Mom_30│
+        │   1. Random Forest Classifier           │                     │   - Cyclical Seasonality: sin/cos(m)    │
+        │   2. HistGradientBoosting Classifier    │                     │ • Algorithms Benchmarked:               │
+        │   3. Support Vector Classifier (RBF)    │                     │   1. Ordinary Least Squares (Linear)    │
+        │   4. CART Decision Tree                 │                     │   2. Ridge Regression (L2 Penalty)      │
+        │   5. Gaussian Naive Bayes               │                     │   3. Random Forest Regressor            │
+        │ • Metrics: Accuracy (95.2%), Macro-F1,  │                     │   4. HistGradientBoosting Regressor     │
+        │   Macro-Precision, Confusion Matrix     │                     │ • Metrics: R², RMSE, MAE, MAPE          │
+        │ • Output: P(Crop_i | x) Top-K Ranking   │                     │ • Diagnostics: Residual error analysis  │
+        └─────────────────────────────────────────┘                     └─────────────────────────────────────────┘
+                                                             │
+                                                             ▼
+                                 ┌────────────────────────────────────────────────────────┐
+                                 │          ML RESEARCH & MODEL BENCHMARK STUDIO          │
+                                 │    (Correlation Matrix • Confusion Matrix • XAI)       │
+                                 └────────────────────────────────────────────────────────┘
 ```
-
-### 1. 🌾 Farmer / Seller Portal
-- **Produce Management**: Add harvested crops (Commodity, Variety, Quality Grade, Available Quintals, Asking Rate ₹/Qtl, Harvest Date, Mandi location).
-- **Strict Data Ownership**: A farmer can view, edit, update stock, or delete **only their own** produce listings. Other sellers' data cannot be modified.
-- **Buyer Order Response**: Review incoming purchase offers from buyers. Accept, mark dispatched (with logistics notes), complete, or decline.
-- **Mandi Price Forecaster**: Multi-horizon price regression models (7 to 90 days) based on APMC historical records to help farmers decide their asking rates.
-- **Storage & Selling Advisor**: Compares warehouse/cold-storage costs against expected future price increases to recommend whether to sell now or store.
-
-### 2. 🛒 Trader / Buyer Portal
-- **Live Produce Marketplace**: Search and filter produce listed by verified farmers by crop, state, mandi, and maximum asking rate.
-- **Purchase Order & Bidding**: Place purchase orders specifying required quintals, offered rate per quintal, delivery destination, and contract terms.
-- **Order Tracker (Strict Isolation)**: A buyer can view **only their own** orders and transactions. A buyer cannot change seller asking prices or alter listings.
-- **Pending Order Management**: Cancel pending bids before seller acceptance.
-- **Mandi Price Comparison**: Compare mandi rates across states to discover optimal procurement hubs.
-
-### 3. 🛡️ Super Administrator Portal (`*@super.com`)
-- **Automatic Privilege Assignment**: Any account with an email address ending in `@super.com` (e.g. `admin@super.com`, `officer@super.com`) is granted Super Admin privileges.
-- **Buyer-Seller Interaction Tracking**: Complete chronological audit trail showing how buyers and sellers are interacting (who placed which order, counter-offers, acceptance notes, truck dispatch notices, and deal completions).
-- **Cross-Party Matrix**: Interactive matrix showing the exact trading relationships and transaction volumes between specific buyers and sellers.
-- **Global User Directory**: Full directory of all registered farmers, grain merchants, and administrators.
-- **Global Inventory & Ledger Audit**: Oversight of all produce listings and all orders placed platform-wide, with CSV export capabilities.
-- **APMC Mandi Database Records**: Direct browser for the 361,000+ historical APMC benchmark records.
 
 ---
 
-## ⚡ Quick Test Accounts
+## 📊 Mathematical & Methodological Details
 
-The portal includes 1-click demo logins on the sign-in screen:
+### 1. Engine 1: Multiclass Classification
+- **Feature Space**: $\mathbf{x} = [N, P, K, T, H, \text{pH}, R]^T \in \mathbb{R}^7$.
+- **Validation**: Stratified 80/20 train/test split ensuring balanced class representation across all 10 cultivar targets.
+- **Evaluation Criteria**:
+  $$\text{Macro-F1} = \frac{1}{|\mathcal{C}|} \sum_{c \in \mathcal{C}} \frac{2 \cdot P_c \cdot R_c}{P_c + R_c}$$
+- **Confusion Matrix**: Full $10 \times 10$ matrix computed to analyze inter-class confusion between similar crops (e.g., Gram vs. Soybean).
 
-| Role | Name | Email | Password | Details |
+### 2. Engine 2: Time-Series Regression
+- **Feature Construction**:
+  - Autoregressive lags: $y_{t-1}, y_{t-2}, y_{t-3}, y_{t-7}, y_{t-14}, y_{t-30}$.
+  - Rolling statistics: $\text{MA}_7 = \frac{1}{7}\sum_{i=0}^6 y_{t-i}$, $\text{MA}_{30} = \frac{1}{30}\sum_{i=0}^{29} y_{t-i}$.
+  - Cyclical seasonal encoding:
+    $$x_{\sin} = \sin\left(\frac{2\pi \cdot \text{month}}{12}\right), \quad x_{\cos} = \cos\left(\frac{2\pi \cdot \text{month}}{12}\right)$$
+- **Validation**: Chronological time-series split (first 80% chronologically for training, final 20% for testing) to prevent future data leakage.
+- **Evaluation Metrics**:
+  $$\text{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2}, \quad R^2 = 1 - \frac{\sum (y_i - \hat{y}_i)^2}{\sum (y_i - \bar{y})^2}$$
+
+---
+
+## 👥 Multi-Role Marketplace & Data Isolation
+
+```
+Farmer / Seller Portal ────────┐
+                               ├────► SQLite Relational Database ◄──── Super Administrator Portal
+Trader / Buyer Portal ─────────┘      (Strict Ownership Controls)      (@super.com Live Oversight)
+```
+
+1. **Farmer / Seller Portal**: Manage produce stock, monitor buyer offers, accept/dispatch orders, and access crop planning.
+2. **Trader / Buyer Portal**: Browse active farm listings, submit purchase bids, and track order fulfillment. Buyers cannot modify seller listings.
+3. **Super Administrator Portal (`*@super.com`)**: Complete real-time audit trail of all transactions and buyer-seller negotiations, with full database record explorer.
+
+---
+
+## ⚡ Quick Test Credentials
+
+| Role | User Name | Email | Password | Mandatory Permissions |
 | :--- | :--- | :--- | :--- | :--- |
-| **Seller** | Ramesh Kumar | `ramesh.farmer@mandi.in` | `farmer123` | Khanna Mandi, Punjab (Has active Wheat & Mustard listings) |
-| **Seller** | Baldev Singh | `baldev.singh@mandi.in` | `farmer123` | Karnal Mandi, Haryana (Has active Basmati & Cotton listings) |
-| **Buyer** | Suresh Patel | `suresh.trader@mandi.in` | `buyer123` | Pune Market Yard, Maharashtra (Has active purchase orders) |
-| **Buyer** | Rajesh Gupta | `rajesh.mills@mandi.in` | `buyer123` | Kanpur Mandi, Uttar Pradesh (Has dispatched Rice orders) |
-| **Super Admin** | Dr. Priya Sharma | `admin@super.com` | `admin123` | Full administrative oversight across all buyers & sellers |
-
-*Note: You can also register a new account as a Seller or Buyer. Any new email ending in `@super.com` will automatically be granted Super Admin access.*
+| **Seller** | Ramesh Kumar | `ramesh.farmer@mandi.in` | `farmer123` | Can edit only his own produce listings |
+| **Seller** | Baldev Singh | `baldev.singh@mandi.in` | `farmer123` | Can respond to incoming orders for his crops |
+| **Buyer** | Suresh Patel | `suresh.trader@mandi.in` | `buyer123` | Can browse marketplace and place purchase bids |
+| **Buyer** | Rajesh Gupta | `rajesh.mills@mandi.in` | `buyer123` | Can view and track his own procurement orders |
+| **Super Admin** | Dr. Priya Sharma | `admin@super.com` | `admin123` | Oversight of all transactions and user interactions |
 
 ---
 
-## 💻 Technology Stack
-
-- **Frontend & Web Framework**: Streamlit (Python)
-- **Database**: SQLite3 (`market_data.sqlite`) with relational schema for users, listings, orders, and interactions
-- **Data Analysis**: Pandas, NumPy
-- **Visualizations**: Plotly Express & Plotly Graph Objects
-- **Statistical Modeling**: Scikit-Learn (Linear Regression, Random Forest Regressor, HistGradientBoosting)
-- **Security & Integrity**: Salted SHA-256 password hashing & role-based database constraints
-
----
-
-## 📁 Project Directory Structure
+## 📁 Repository Structure
 
 ```text
 CropPricePredict/
-├── app.py                      # Application router, authentication check & navigation
+├── app.py                      # Main entry point & role-based routing
 ├── config.py                   # System configuration, crops metadata & mandis mapping
 ├── requirements.txt            # Python dependencies
-├── README.md                   # Project documentation
+├── README.md                   # Academic project documentation
 ├── run_app.py                  # CLI launcher script
-├── test_pipeline.py            # End-to-end automated test suite
+├── test_pipeline.py            # End-to-end automated test suite (8/8 tests)
+│
+├── ml/
+│   ├── crop_classifier.py      # Multiclass classification pipeline (Random Forest, SVM, etc.)
+│   ├── train_model.py          # Time-series regression training pipeline (Linear, RF, HGB)
+│   ├── feature_engineering.py  # Lags (t-1..30), rolling moving averages, cyclical sin/cos
+│   ├── preprocessing.py        # Outlier filtering, missing value imputation
+│   ├── evaluate.py             # MAE, RMSE, R², MAPE, confusion metrics
+│   └── predict.py              # Recursive multi-horizon forecasting engine
+│
+├── views/
+│   ├── ml_studio.py            # Academic ML Research & Model Studio (EDA, CM, Residuals, Tuning)
+│   ├── crop_recommendation.py  # Dual-engine suitability classification & profit planner
+│   ├── prediction.py           # Mandi price forecasting interface
+│   ├── seller_portal.py        # Farmer produce listings & order management
+│   ├── buyer_portal.py         # Trader marketplace & procurement tracker
+│   ├── superadmin_portal.py    # Administrative command center & audit logs
+│   ├── auth.py                 # Multi-role authentication & demo login
+│   ├── market_analysis.py      # Inter-mandi price spread & spatial comparisons
+│   ├── selling_advisor.py      # Storage cost vs. price appreciation timing advisor
+│   ├── dashboard.py            # APMC market summary & price trends
+│   ├── data_management.py      # APMC CSV dataset upload & inspector
+│   └── reports.py              # Market reports & CSV exporter
 │
 ├── data/
 │   ├── database.py             # APMC historical benchmark data loader (360k+ records)
-│   ├── marketplace_db.py       # Users, listings, orders, and interaction tracking
-│   ├── generator.py            # Historical dataset generation utilities
+│   ├── marketplace_db.py       # User accounts, listings, orders, and interaction tracking
+│   ├── generator.py            # Dataset generator utilities
+│   ├── crop_agronomic_dataset.csv # Agronomic training dataset (N, P, K, pH, climate)
 │   └── market_data.sqlite      # SQLite database
 │
-├── pages/
-│   ├── auth.py                 # Login, registration & quick demo account picker
-│   ├── seller_portal.py        # Seller dashboard, crop inventory & order response
-│   ├── buyer_portal.py         # Buyer dashboard, marketplace browsing & order tracking
-│   ├── superadmin_portal.py    # Super admin oversight, interaction log & user directory
-│   ├── dashboard.py            # APMC market summary & price trends
-│   ├── prediction.py           # Mandi price forecasting engine
-│   ├── market_analysis.py      # Inter-state mandi price spread & comparison
-│   ├── crop_recommendation.py  # Soil agronomics & crop yield profit planner
-│   ├── selling_advisor.py      # Warehouse storage cost vs sale timing advisor
-│   ├── data_management.py      # APMC CSV dataset upload & table inspector
-│   ├── model_management.py     # Statistical regression model evaluation
-│   └── reports.py              # Market reports & CSV exporter
-│
-├── core/
-│   ├── advisor.py              # Storage cost calculations & price timing logic
-│   ├── evaluator.py            # Model error metric calculations
-│   └── predictor.py            # Forecast iteration logic
-│
-├── ml/
-│   ├── preprocessing.py        # Data cleaning and handling missing values
-│   ├── feature_engineering.py  # Time series lags, moving averages & seasonality
-│   ├── train_model.py          # Time-based train/test split and regression training
-│   └── predict.py              # Multi-horizon forecast engine
-│
 ├── ui/
-│   └── styles.py               # Custom UI design system, badges, and status pills
+│   └── styles.py               # CSS design system, badges, and layout rules
 │
 └── utils/
-    ├── calculations.py         # Farm revenue and profit calculations
+    ├── calculations.py         # Agronomic profit calculations & financial metrics
     └── validation.py           # Dataset schema validation
 ```
 
 ---
 
-## 🚀 How to Run the Application
+## 🚀 Execution & Verification
 
-### 1. Install Dependencies
+### 1. Install Required Packages
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Launch the Application
-Run the launcher script:
-```bash
-python run_app.py
-```
-Or run directly via Streamlit:
-```bash
-streamlit run app.py
-```
-
-Open your browser at `http://localhost:8501`.
-
-### 3. Run Automated Tests
+### 2. Run Automated Verification Test Suite
 ```bash
 python test_pipeline.py
 ```
+*Executes all 8 verification modules: Database initialization, schema validation, feature engineering, regression benchmarking, multi-horizon forecasting, multiclass classification, financial feasibility, and role-based access control.*
+
+### 3. Launch Web Application
+```bash
+python run_app.py
+```
+*Or directly via Streamlit:*
+```bash
+streamlit run app.py
+```
+Open your browser at `http://localhost:8501`.

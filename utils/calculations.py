@@ -32,6 +32,7 @@ def calculate_crop_profitability(
         "crop_name": crop_name,
         "farm_area_acres": farm_area_acres,
         "total_yield_qtl": round(total_yield_qtl, 2),
+        "total_yield_quintals": round(total_yield_qtl, 2),
         "expected_revenue": round(expected_revenue, 2),
         "total_cost": round(total_cost, 2),
         "total_profit": round(total_profit, 2),
