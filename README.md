@@ -147,5 +147,4 @@ CropPricePredict/
 └── utils/
     ├── calculations.py         # Agronomic profit calculations & financial metrics
     └── validation.py           # Dataset schema validation
-```
-pen your browser at `http://localhost:8501`.
+
