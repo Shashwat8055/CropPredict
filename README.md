@@ -5,7 +5,7 @@
 
 ---
 
-## 🌾 Project Abstract & Problem Formulation
+##  Project Abstract & Problem Formulation
 
 Agricultural markets in India suffer from dual systemic inefficiencies:
 1. **Agronomic Misallocation**: Smallholder farmers often cultivate crops without empirical compatibility analysis of their soil chemistry ($N, P, K, \text{pH}$) and localized agro-climatic conditions (Temperature, Humidity, Rainfall).
@@ -54,7 +54,7 @@ Agricultural markets in India suffer from dual systemic inefficiencies:
 
 ---
 
-## 📊 Mathematical & Methodological Details
+##  Mathematical & Methodological Details
 
 ### 1. Engine 1: Multiclass Classification
 - **Feature Space**: $\mathbf{x} = [N, P, K, T, H, \text{pH}, R]^T \in \mathbb{R}^7$.
@@ -89,7 +89,7 @@ Trader / Buyer Portal ─────────┘      (Strict Ownership Cont
 
 ---
 
-## ⚡ Quick Test Credentials
+##  Quick Test Credentials
 
 | Role | User Name | Email | Password | Mandatory Permissions |
 | :--- | :--- | :--- | :--- | :--- |
@@ -101,7 +101,7 @@ Trader / Buyer Portal ─────────┘      (Strict Ownership Cont
 
 ---
 
-## 📁 Repository Structure
+##  Repository Structure
 
 ```text
 CropPricePredict/
@@ -148,28 +148,4 @@ CropPricePredict/
     ├── calculations.py         # Agronomic profit calculations & financial metrics
     └── validation.py           # Dataset schema validation
 ```
-
----
-
-## 🚀 Execution & Verification
-
-### 1. Install Required Packages
-```bash
-pip install -r requirements.txt
-```
-
-### 2. Run Automated Verification Test Suite
-```bash
-python test_pipeline.py
-```
-*Executes all 8 verification modules: Database initialization, schema validation, feature engineering, regression benchmarking, multi-horizon forecasting, multiclass classification, financial feasibility, and role-based access control.*
-
-### 3. Launch Web Application
-```bash
-python run_app.py
-```
-*Or directly via Streamlit:*
-```bash
-streamlit run app.py
-```
-Open your browser at `http://localhost:8501`.
+pen your browser at `http://localhost:8501`.
